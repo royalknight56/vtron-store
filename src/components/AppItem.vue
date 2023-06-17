@@ -1,0 +1,93 @@
+<template>
+    <div class="app-item">
+        <img class="app-img" :src="item?.icon" alt="">
+        <div class="app-content">
+            <div class="app-title">{{ item?.name }}</div>
+            <div class="app-desc">{{ item?.desc }}</div>
+            <div class="app-button">
+                <div v-if="installedList?.some((install: any) => install.name == item?.name + '.ts')">
+                    <button @click="uninstall?.(item)">卸载</button>
+                </div>
+                <div v-else>
+                    <button @click="install?.(item)">安装</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+<script setup lang="ts">
+defineProps({
+    item: Object,
+    installedList: Array,
+    install: Function,
+    uninstall: Function,
+})
+
+</script>
+<style scoped>
+.app-item {
+    width: 300px;
+    height: 100px;
+    margin: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    transition: all 0.2s;
+}
+
+.app-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+.app-content{
+    margin-left: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    height: 80px;
+}
+.app-title{
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.app-item:hover{
+    box-shadow: 0 0 10px #ccc;
+    transform: translateY(-2px);
+}
+.app-item:active{
+    box-shadow: 0 0 0px #ccc;
+    transform: translateY(0px);
+}
+.app-button{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+}
+.app-button button{
+    width: 60px;
+    height: 30px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.app-button button:hover{
+    box-shadow: 0 0 10px #ccc;
+    transform: translateY(-2px);
+}
+.app-button button:active{
+    box-shadow: 0 0 0px #ccc;
+    transform: translateY(0px);
+}
+</style>

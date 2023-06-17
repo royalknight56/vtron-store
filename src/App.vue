@@ -1,30 +1,106 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import { onMounted, ref } from 'vue';
+import AppItem from './components/AppItem.vue';
+const isready = ref(false)
+const installedList = ref([]);
+onMounted(() => {
+  window.parent.postMessage({ type: 'ready', data: 'ready' }, "*")
+  window.addEventListener("message", function (event) {
+    if (event.source === window.parent) {
+      let rec: any = event.data;
+      if (rec.type === 'init') {
+        installedList.value = rec.data;
+        isready.value = true;
+      }
+    }
+  });
+})
+function install(item: any) {
+  window.parent.postMessage({
+    type: 'install', data: {
+      path: `/C/System/plugs/${item.name}.ts`,
+      file: {
+        content: item.content
+      }
+    }
+  }, "*")
+}
+
+function uninstall(item: any) {
+  window.parent.postMessage({
+    type: 'uninstall', data: {
+      path: `/C/System/plugs/${item.name}.ts`,
+      file: {
+        content: item.content
+      }
+    }
+  }, "*")
+}
+
+
+const temp = [
+  {
+    name: 'apptest',
+    icon: 'https://www.baidu.com/img/flexible/logo/pc/result.png',
+    content: `function main(system){
+        console.log('testapp');
+        console.log(system);
+      }`
+  },
+  {
+    name: 'apptest',
+    icon: 'https://www.baidu.com/img/flexible/logo/pc/result.png',
+    content: `function main(system){
+        console.log('testapp');
+        console.log(system);
+      }`
+  },
+    {
+    name: 'apptest',
+    icon: 'https://www.baidu.com/img/flexible/logo/pc/result.png',
+    content: `function main(system){
+        console.log('testapp');
+        console.log(system);
+      }`
+  }
+]
 </script>
 
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div class="store">
+    <div v-if="isready" class="store-top">
+      <div v-for="item in temp" class="store-item">
+        <AppItem :item="item" 
+        :installedList="installedList" 
+        :install="install" 
+          :uninstall="uninstall"></AppItem>
+      </div>
+
+    </div>
+    <div class="store-middle">
+
+    </div>
+    <div class="store-bottom">
+
+    </div>
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
 
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+.store {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+.store-top{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items:  flex-start;
 }
 </style>
