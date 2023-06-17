@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import AppItem from './components/AppItem.vue';
+import defaulticon from "./assets/default.png"
+import baiduicon from "./assets/baidu.png"
+
 const isready = ref(false)
 const installedList = ref([]);
 onMounted(() => {
@@ -18,10 +21,12 @@ onMounted(() => {
 function install(item: any) {
   window.parent.postMessage({
     type: 'install', data: {
-      path: `/C/System/plugs/${item.name}.ts`,
+      path: `/C/System/plugs/${item.name}.js`,
       file: {
-        content: item.content
-      }
+        content: item.content,
+        uninstallContent: item.uninstallContent
+      },
+      type:item.type
     }
   }, "*")
 }
@@ -29,10 +34,13 @@ function install(item: any) {
 function uninstall(item: any) {
   window.parent.postMessage({
     type: 'uninstall', data: {
-      path: `/C/System/plugs/${item.name}.ts`,
+      path: `/C/System/plugs/${item.name}.js`,
       file: {
-        content: item.content
-      }
+        content: item.content,
+        uninstallContent: item.uninstallContent
+
+      },
+      type:item.type
     }
   }, "*")
 }
@@ -40,28 +48,30 @@ function uninstall(item: any) {
 
 const temp = [
   {
-    name: 'apptest',
-    icon: 'https://www.baidu.com/img/flexible/logo/pc/result.png',
+    name: 'systemTest',
+    desc:'可以在启动的时候输出一些信息',
+    icon: defaulticon,
+    type:'all',
     content: `function main(system){
-        console.log('testapp');
         console.log(system);
       }`
   },
   {
-    name: 'apptest',
-    icon: 'https://www.baidu.com/img/flexible/logo/pc/result.png',
+    name: 'kanmoon',
+    desc:'添加看月亮app',
+    icon: baiduicon,
+    type:'once',
     content: `function main(system){
-        console.log('testapp');
-        console.log(system);
-      }`
-  },
-    {
-    name: 'apptest',
-    icon: 'https://www.baidu.com/img/flexible/logo/pc/result.png',
-    content: `function main(system){
-        console.log('testapp');
-        console.log(system);
-      }`
+      system.fs.writeFile('/C/Users/Desktop/看月亮.url',
+        {
+          content: "link::http://static.myim.online/moon/::icon::${defaulticon}",
+        }
+      )
+    }`,
+    uninstallContent: `function main(system){
+      system.fs.unlink('/C/Users/Desktop/看月亮.url')
+    }`
+
   }
 ]
 </script>
@@ -75,13 +85,14 @@ const temp = [
         :install="install" 
           :uninstall="uninstall"></AppItem>
       </div>
-
     </div>
-    <div class="store-middle">
-
+    <div v-else class="store-noready">
+      <div id="wait">
+        <div class="waitd" id="wait1"></div>
+        <div class="waitd" id="wait2"></div>
+        <div class="waitd" id="wait3"></div>
+        <div class="waitd" id="wait4"></div>
     </div>
-    <div class="store-bottom">
-
     </div>
   </div>
 </template>
@@ -90,10 +101,7 @@ const temp = [
 .store {
   width: 100%;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
+  height: 100vh;
 }
 .store-top{
   width: 100%;
@@ -102,5 +110,115 @@ const temp = [
   flex-wrap: wrap;
   justify-content: flex-start;
   align-items:  flex-start;
+}
+.store-noready{
+  width: 100%;
+  height: 100%;
+  background-color: #0076d733;
+}
+
+
+#wait {
+    position: absolute;
+    left: 50%;
+    top: calc(50% + 150px);
+}
+
+.waitd {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    left: 30px;
+    background-color: azure;
+    border-radius: 50%;
+    transform-origin: -15px 0;
+}
+
+#wait1 {
+    animation: dotAni1 2s linear infinite;
+}
+
+#wait2 {
+    animation: dotAni2 2s linear infinite;
+}
+
+#wait3 {
+    animation: dotAni3 2s linear infinite;
+}
+
+#wait4 {
+    animation: dotAni4 2s linear infinite;
+}
+
+@keyframes dotAni1 {
+    0% {
+        transform: rotateZ(0deg);
+    }
+
+    20% {
+        transform: rotateZ(240deg);
+    }
+
+    85% {
+        transform: rotateZ(290deg);
+    }
+
+    100% {
+        transform: rotateZ(360deg);
+    }
+}
+
+@keyframes dotAni2 {
+    0% {
+        transform: rotateZ(0deg);
+    }
+
+    35% {
+        transform: rotateZ(240deg);
+    }
+
+    85% {
+        transform: rotateZ(290deg);
+    }
+
+    100% {
+        transform: rotateZ(360deg);
+    }
+}
+
+@keyframes dotAni3 {
+    0% {
+        transform: rotateZ(0deg);
+    }
+
+    50% {
+        transform: rotateZ(240deg);
+    }
+
+    85% {
+        transform: rotateZ(290deg);
+    }
+
+    100% {
+        transform: rotateZ(360deg);
+    }
+}
+
+@keyframes dotAni4 {
+    0% {
+        transform: rotateZ(0deg);
+    }
+
+    65% {
+        transform: rotateZ(240deg);
+    }
+
+    85% {
+        transform: rotateZ(290deg);
+    }
+
+    100% {
+        transform: rotateZ(360deg);
+    }
 }
 </style>

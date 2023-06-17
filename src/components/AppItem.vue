@@ -5,7 +5,7 @@
             <div class="app-title">{{ item?.name }}</div>
             <div class="app-desc">{{ item?.desc }}</div>
             <div class="app-button">
-                <div v-if="installedList?.some((install: any) => install.name == item?.name + '.ts')">
+                <div v-if="installedList?.some((install: any) => install.name == item?.name + '.js')">
                     <button @click="uninstall?.(item)">卸载</button>
                 </div>
                 <div v-else>
@@ -40,8 +40,8 @@ defineProps({
 }
 
 .app-img {
+    padding: 10px;
     width: 80px;
-    height: 80px;
     border-radius: 4px;
     border: 1px solid #ccc;
 }
@@ -52,12 +52,16 @@ defineProps({
     justify-content: space-between;
     align-items: flex-start;
     height: 80px;
+    width: 100%;
 }
 .app-title{
     font-size: 16px;
     font-weight: bold;
 }
-
+.app-desc{
+    font-size: 12px;
+    color: #666;
+}
 .app-item:hover{
     box-shadow: 0 0 10px #ccc;
     transform: translateY(-2px);
