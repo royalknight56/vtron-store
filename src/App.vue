@@ -2,7 +2,8 @@
 import { onMounted, ref } from 'vue';
 import AppItem from './components/AppItem.vue';
 import defaulticon from "./assets/default.png"
-import baiduicon from "./assets/baidu.png"
+import moonappicon from "./assets/moonappicon.webp"
+
 
 const isready = ref(false)
 const installedList = ref([]);
@@ -59,12 +60,12 @@ const temp = [
   {
     name: 'kanmoon',
     desc:'添加看月亮app',
-    icon: baiduicon,
+    icon: moonappicon,
     type:'once',
     content: `function main(system){
       system.fs.writeFile('/C/Users/Desktop/看月亮.url',
         {
-          content: "link::http://static.myim.online/moon/::icon::${defaulticon}",
+          content: "link::http://static.myim.online/moon/::icon::${moonappicon}",
         }
       )
     }`,
