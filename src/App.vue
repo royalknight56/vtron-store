@@ -4,7 +4,6 @@ import AppItem from './components/AppItem.vue';
 import defaulticon from "./assets/default.png"
 import moonappicon from "./assets/moonappicon.webp"
 
-
 const isready = ref(false)
 const installedList = ref([]);
 onMounted(() => {
@@ -55,6 +54,17 @@ const temp = [
     type:'all',
     content: `function main(system){
         console.log(system);
+      }`
+  },
+  {
+    name: 'consoleShell',
+    desc:'可以在控制台输入shell命令,如shell("ls")',
+    icon: defaulticon,
+    type:'all',
+    content: `function main(system){
+        window.shell = (cmd)=>{
+          system.shell(cmd)
+        }
       }`
   },
   {
