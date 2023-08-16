@@ -74,7 +74,7 @@ defineProps({
   user-select: none;
 }
 .app-item:hover {
-  box-shadow: 0 0 10px #cccccc70;
+  box-shadow: 0 0 20px 2px #dddddd5b;
   /* transform: translateY(-2px); */
 }
 /* .app-item:active {
