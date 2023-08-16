@@ -1,6 +1,12 @@
 <template>
   <div class="app-item">
-    <img v-if="item?.icon" class="app-img" :src="item?.icon" alt="" />
+    <img
+      v-if="item?.icon"
+      draggable="false"
+      class="app-img"
+      :src="item?.icon"
+      alt=""
+    />
     <div class="app-content">
       <div class="app-title">{{ item?.name }}</div>
       <div class="app-desc">{{ item?.desc }}</div>
@@ -45,6 +51,7 @@ defineProps({
   width: 80px;
   border-radius: 4px;
   border: 1px solid #cccccc7b;
+  user-select: none;
 }
 .app-content {
   margin-left: 10px;
@@ -67,13 +74,13 @@ defineProps({
   user-select: none;
 }
 .app-item:hover {
-  box-shadow: 0 0 10px #ccc;
-  transform: translateY(-2px);
+  box-shadow: 0 0 10px #cccccc70;
+  /* transform: translateY(-2px); */
 }
-.app-item:active {
+/* .app-item:active {
   box-shadow: 0 0 0px #ccc;
   transform: translateY(0px);
-}
+} */
 .app-button {
   width: 100%;
   display: flex;
@@ -92,7 +99,7 @@ defineProps({
 }
 .app-button button:hover {
   box-shadow: 0 0 10px #ccc;
-  transform: translateY(-2px);
+  /* transform: translateY(-2px); */
 }
 .app-button button:active {
   box-shadow: 0 0 0px #ccc;

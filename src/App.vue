@@ -138,6 +138,7 @@ const temp = [
     <div v-if="isready" class="store-top">
       <div class="left-bar"></div>
       <div class="right-main">
+        <div class="main-title">VTRON商店</div>
         <div class="sub-title">热门应用</div>
         <div class="main-app">
           <div v-for="item in temp" class="store-item">
@@ -174,15 +175,26 @@ const temp = [
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
+  overflow: hidden;
 }
 .left-bar {
   width: 60px;
+}
+.main-title {
+  font-size: 26px;
+  font-weight: bold;
+  font-variant: small-caps;
+  font-variant-ligatures: discretionary-ligatures;
+  margin: 10px;
+  margin-top: 20px;
+  user-select: none;
 }
 .sub-title {
   padding-top: 30px;
   font-size: 20px;
   font-weight: bold;
   margin: 10px;
+  user-select: none;
 }
 .main-app {
   width: 100%;
