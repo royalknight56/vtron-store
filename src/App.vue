@@ -24,17 +24,20 @@ onMounted(() => {
   }, 5000);
 });
 function install(item: any) {
-  window.parent.postMessage({
-    type: "install",
-    data: {
-      path: `/C/System/plugs/${item.name}.js`,
-      file: {
-        content: item.content?.replaceAll("\n", " "),
-        uninstallContent: item.uninstallContent?.replaceAll("\n", " "),
+  window.parent.postMessage(
+    {
+      type: "install",
+      data: {
+        path: `/C/System/plugs/${item.name}.js`,
+        file: {
+          content: item.content?.replaceAll("\n", " "),
+          uninstallContent: item.uninstallContent?.replaceAll("\n", " "),
+        },
+        type: item.type,
       },
-      type: item.type,
     },
-  });
+    "*"
+  );
 }
 
 function uninstall(item: any) {
@@ -47,6 +50,7 @@ function uninstall(item: any) {
           content: item.content?.replaceAll("\n", " "),
           uninstallContent: item.uninstallContent?.replaceAll("\n", " "),
         },
+        type: item.type,
       },
     },
     "*"
