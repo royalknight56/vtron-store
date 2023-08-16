@@ -1,77 +1,84 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import AppItem from './components/AppItem.vue';
-import defaulticon from "./assets/default.png"
-import moonappicon from "./assets/moonappicon.webp"
+import { onMounted, ref } from "vue";
+import AppItem from "./components/AppItem.vue";
+import defaulticon from "./assets/default.png";
+import moonappicon from "./assets/moonappicon.webp";
 
-const isready = ref(false)
+const isready = ref(false);
 const installedList = ref([]);
 onMounted(() => {
-  window.parent.postMessage({ type: 'ready', data: 'ready' }, "*")
+  window.parent.postMessage({ type: "ready", data: "ready" }, "*");
   window.addEventListener("message", function (event) {
     if (event.source === window.parent) {
       let rec: any = event.data;
-      if (rec.type === 'init') {
+      if (rec.type === "init") {
         installedList.value = rec.data;
         isready.value = true;
       }
     }
   });
-})
+  setTimeout(() => {
+    if (!isready.value) {
+      isready.value = true;
+    }
+  }, 5000);
+});
 function install(item: any) {
   window.parent.postMessage({
-    type: 'install', data: {
+    type: "install",
+    data: {
       path: `/C/System/plugs/${item.name}.js`,
       file: {
-        content: item.content?.replaceAll('\n',' '),
-        uninstallContent: item.uninstallContent?.replaceAll('\n',' ')
+        content: item.content?.replaceAll("\n", " "),
+        uninstallContent: item.uninstallContent?.replaceAll("\n", " "),
       },
-      type:item.type
-    }
-  }, "*")
+      type: item.type,
+    },
+  });
 }
 
 function uninstall(item: any) {
-  window.parent.postMessage({
-    type: 'uninstall', data: {
-      path: `/C/System/plugs/${item.name}.js`,
-      file: {
-        content: item.content?.replaceAll('\n',' '),
-        uninstallContent: item.uninstallContent?.replaceAll('\n',' ')
-
+  window.parent.postMessage(
+    {
+      type: "uninstall",
+      data: {
+        path: `/C/System/plugs/${item.name}.js`,
+        file: {
+          content: item.content?.replaceAll("\n", " "),
+          uninstallContent: item.uninstallContent?.replaceAll("\n", " "),
+        },
       },
-      type:item.type
-    }
-  }, "*")
+    },
+    "*"
+  );
 }
-
 
 const temp = [
   {
-    name: 'systemTest',
-    desc:'可以在启动的时候输出一些信息',
+    name: "systemTest",
+    desc: "可以在启动的时候输出一些信息",
     icon: defaulticon,
-    type:'all',
+    type: "all",
     content: `function main(system){
         console.log(system);
-      }`
+      }`,
   },
   {
-    name: 'consoleShell',
-    desc:'可以在控制台输入shell命令,如shell("ls")',
+    name: "consoleShell",
+    desc: '可以在控制台输入shell命令,如shell("ls")',
     icon: defaulticon,
-    type:'all',
+    type: "all",
     content: `function main(system){
         window.shell = (cmd)=>{
           system.shell(cmd)
         }
-      }`
+      }`,
   },
   {
-    name: 'kanmoon',
-    desc:'添加看月亮app',
+    name: "kanmoon",
+    desc: "添加看月亮app",
     icon: moonappicon,
-    type:'once',
+    type: "once",
     content: `function main(system){
       system.fs.writeFile('/C/Users/Desktop/看月亮.url',
         {
@@ -81,13 +88,13 @@ const temp = [
     }`,
     uninstallContent: `function main(system){
       system.fs.unlink('/C/Users/Desktop/看月亮.url')
-    }`
+    }`,
   },
   {
-    name: 'tool.lu',
-    desc:'添加在线工具集合app',
-    icon: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iNTEycHgiIGhlaWdodD0iNTEycHgiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPgogICAgPHRpdGxlPuW3peWFtzwvdGl0bGU+CiAgICA8ZyBpZD0i5bel5YW3IiBzdHJva2U9Im5vbmUiIHN0cm9rZS13aWR0aD0iMSIgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj4KICAgICAgICA8ZyBpZD0i5bel5YW3566xIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxOS4wMDAwMDAsIDE5LjAwMDAwMCkiIGZpbGwtcnVsZT0ibm9uemVybyI+CiAgICAgICAgICAgIDxwb2x5Z29uIGlkPSJQYXRoIiBmaWxsPSIjMjAyNDI1IiBvcGFjaXR5PSIwLjAxIiBwb2ludHM9IjAgMCA0NzMgMCA0NzMgNDczIDAgNDczIj48L3BvbHlnb24+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik0xNTcuNjY2NjY3LDMxLjUzMzMzMzUgQzE0MC4yNTEyODgsMzEuNTMzMzMzNSAxMjYuMTMzMzMzLDQ1LjY1MTI4NzcgMTI2LjEzMzMzMyw2My4wNjY2NjY1IEwxMjYuMTMzMzMzLDE1Ny42NjY2NjcgQzEyNi4xMzMzMzMsMTc1LjA4MjA0NiAxNDAuMjUxMjg3LDE4OS4yIDE1Ny42NjY2NjcsMTg5LjIgTDMxNS4zMzMzMzMsMTg5LjIgQzMzMi43NDg3MTMsMTg5LjIgMzQ2Ljg2NjY2NywxNzUuMDgyMDQ2IDM0Ni44NjY2NjcsMTU3LjY2NjY2NyBMMzQ2Ljg2NjY2Nyw2My4wNjY2NjY1IEMzNDYuODY2NjY3LDQ1LjY1MTI4NzcgMzMyLjc0ODcxMiwzMS41MzMzMzM1IDMxNS4zMzMzMzMsMzEuNTMzMzMzNSBMMTU3LjY2NjY2NywzMS41MzMzMzM1IFogTTE1Ny42NjY2NjcsNjMuMDY2NjY2NSBMMzE1LjMzMzMzMyw2My4wNjY2NjY1IEwzMTUuMzMzMzMzLDE1Ny42NjY2NjcgTDE1Ny42NjY2NjcsMTU3LjY2NjY2NyBMMTU3LjY2NjY2Nyw2My4wNjY2NjY1IFogTTMxLjUzMzMzMzUsMjgzLjggTDMxLjUzMzMzMzUsNDI1LjcgQzMxLjUzMzMzMzUsNDM0LjQwNzY4OSAzOC41OTIzMTA1LDQ0MS40NjY2NjcgNDcuMyw0NDEuNDY2NjY3IEw0MjUuNyw0NDEuNDY2NjY3IEM0MzQuNDA3Njg5LDQ0MS40NjY2NjcgNDQxLjQ2NjY2Nyw0MzQuNDA3Njg5IDQ0MS40NjY2NjcsNDI1LjcgTDQ0MS40NjY2NjcsMjgzLjggQzQ0MS40NjY2NjcsMjc1LjA5MjMxMSA0MzQuNDA3Njg5LDI2OC4wMzMzMzMgNDI1LjcsMjY4LjAzMzMzMyBMNDcuMywyNjguMDMzMzMzIEMzOC41OTIzMTA1LDI2OC4wMzMzMzMgMzEuNTMzMzMzNSwyNzUuMDkyMzExIDMxLjUzMzMzMzUsMjgzLjggWiIgaWQ9IlNoYXBlIiBmaWxsPSIjMDA5QTYxIj48L3BhdGg+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik0zMS41MzMzMzM1LDEyNi4xMzMzMzMgQzMxLjUzMzMzMzUsMTIxLjk1MTc1MyAzMy4xOTQ0NTk1LDExNy45NDE0NCAzNi4xNTEyODMsMTE0Ljk4NDYxNiBDMzkuMTA4MTA2NiwxMTIuMDI3NzkzIDQzLjExODQyLDExMC4zNjY2NjcgNDcuMywxMTAuMzY2NjY3IEw0MjUuNywxMTAuMzY2NjY3IEM0MjkuODgxNTgsMTEwLjM2NjY2NyA0MzMuODkxODkzLDExMi4wMjc3OTMgNDM2Ljg0ODcxNywxMTQuOTg0NjE2IEM0MzkuODA1NTQxLDExNy45NDE0NCA0NDEuNDY2NjY3LDEyMS45NTE3NTMgNDQxLjQ2NjY2NywxMjYuMTMzMzMzIEw0NDEuNDY2NjY3LDIzNi41IEM0NDEuNDY2NjY3LDI0NS4yMDc2ODkgNDM0LjQwNzY4OSwyNTIuMjY2NjY3IDQyNS43LDI1Mi4yNjY2NjcgTDQ3LjMsMjUyLjI2NjY2NyBDMzguNTkyMzEwNSwyNTIuMjY2NjY3IDMxLjUzMzMzMzUsMjQ1LjIwNzY4OSAzMS41MzMzMzM1LDIzNi41IEwzMS41MzMzMzM1LDEyNi4xMzMzMzMgWiIgaWQ9IlBhdGgiIGZpbGw9IiNGRkFBNDQiPjwvcGF0aD4KICAgICAgICAgICAgPHBhdGggZD0iTTE3My40MzMzMzMsMjM2LjUgQzE3My40MzMzMzMsMjI3Ljc5MjMxMSAxODAuNDkyMzExLDIyMC43MzMzMzMgMTg5LjIsMjIwLjczMzMzMyBMMjgzLjgsMjIwLjczMzMzMyBDMjkyLjUwNzY4OSwyMjAuNzMzMzMzIDI5OS41NjY2NjcsMjI3Ljc5MjMxMSAyOTkuNTY2NjY3LDIzNi41IEwyOTkuNTY2NjY3LDI4My44IEMyOTkuNTY2NjY3LDI5Mi41MDc2ODkgMjkyLjUwNzY4OSwyOTkuNTY2NjY3IDI4My44LDI5OS41NjY2NjcgTDE4OS4yLDI5OS41NjY2NjcgQzE4MC40OTIzMTEsMjk5LjU2NjY2NyAxNzMuNDMzMzMzLDI5Mi41MDc2ODkgMTczLjQzMzMzMywyODMuOCBMMTczLjQzMzMzMywyMzYuNSBMMTczLjQzMzMzMywyMzYuNSBaIiBpZD0iUGF0aCIgZmlsbD0iI0ZGRkZGRiI+PC9wYXRoPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+',
-    type:'once',
+    name: "tool.lu",
+    desc: "添加在线工具集合app",
+    icon: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iNTEycHgiIGhlaWdodD0iNTEycHgiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPgogICAgPHRpdGxlPuW3peWFtzwvdGl0bGU+CiAgICA8ZyBpZD0i5bel5YW3IiBzdHJva2U9Im5vbmUiIHN0cm9rZS13aWR0aD0iMSIgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj4KICAgICAgICA8ZyBpZD0i5bel5YW3566xIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxOS4wMDAwMDAsIDE5LjAwMDAwMCkiIGZpbGwtcnVsZT0ibm9uemVybyI+CiAgICAgICAgICAgIDxwb2x5Z29uIGlkPSJQYXRoIiBmaWxsPSIjMjAyNDI1IiBvcGFjaXR5PSIwLjAxIiBwb2ludHM9IjAgMCA0NzMgMCA0NzMgNDczIDAgNDczIj48L3BvbHlnb24+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik0xNTcuNjY2NjY3LDMxLjUzMzMzMzUgQzE0MC4yNTEyODgsMzEuNTMzMzMzNSAxMjYuMTMzMzMzLDQ1LjY1MTI4NzcgMTI2LjEzMzMzMyw2My4wNjY2NjY1IEwxMjYuMTMzMzMzLDE1Ny42NjY2NjcgQzEyNi4xMzMzMzMsMTc1LjA4MjA0NiAxNDAuMjUxMjg3LDE4OS4yIDE1Ny42NjY2NjcsMTg5LjIgTDMxNS4zMzMzMzMsMTg5LjIgQzMzMi43NDg3MTMsMTg5LjIgMzQ2Ljg2NjY2NywxNzUuMDgyMDQ2IDM0Ni44NjY2NjcsMTU3LjY2NjY2NyBMMzQ2Ljg2NjY2Nyw2My4wNjY2NjY1IEMzNDYuODY2NjY3LDQ1LjY1MTI4NzcgMzMyLjc0ODcxMiwzMS41MzMzMzM1IDMxNS4zMzMzMzMsMzEuNTMzMzMzNSBMMTU3LjY2NjY2NywzMS41MzMzMzM1IFogTTE1Ny42NjY2NjcsNjMuMDY2NjY2NSBMMzE1LjMzMzMzMyw2My4wNjY2NjY1IEwzMTUuMzMzMzMzLDE1Ny42NjY2NjcgTDE1Ny42NjY2NjcsMTU3LjY2NjY2NyBMMTU3LjY2NjY2Nyw2My4wNjY2NjY1IFogTTMxLjUzMzMzMzUsMjgzLjggTDMxLjUzMzMzMzUsNDI1LjcgQzMxLjUzMzMzMzUsNDM0LjQwNzY4OSAzOC41OTIzMTA1LDQ0MS40NjY2NjcgNDcuMyw0NDEuNDY2NjY3IEw0MjUuNyw0NDEuNDY2NjY3IEM0MzQuNDA3Njg5LDQ0MS40NjY2NjcgNDQxLjQ2NjY2Nyw0MzQuNDA3Njg5IDQ0MS40NjY2NjcsNDI1LjcgTDQ0MS40NjY2NjcsMjgzLjggQzQ0MS40NjY2NjcsMjc1LjA5MjMxMSA0MzQuNDA3Njg5LDI2OC4wMzMzMzMgNDI1LjcsMjY4LjAzMzMzMyBMNDcuMywyNjguMDMzMzMzIEMzOC41OTIzMTA1LDI2OC4wMzMzMzMgMzEuNTMzMzMzNSwyNzUuMDkyMzExIDMxLjUzMzMzMzUsMjgzLjggWiIgaWQ9IlNoYXBlIiBmaWxsPSIjMDA5QTYxIj48L3BhdGg+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik0zMS41MzMzMzM1LDEyNi4xMzMzMzMgQzMxLjUzMzMzMzUsMTIxLjk1MTc1MyAzMy4xOTQ0NTk1LDExNy45NDE0NCAzNi4xNTEyODMsMTE0Ljk4NDYxNiBDMzkuMTA4MTA2NiwxMTIuMDI3NzkzIDQzLjExODQyLDExMC4zNjY2NjcgNDcuMywxMTAuMzY2NjY3IEw0MjUuNywxMTAuMzY2NjY3IEM0MjkuODgxNTgsMTEwLjM2NjY2NyA0MzMuODkxODkzLDExMi4wMjc3OTMgNDM2Ljg0ODcxNywxMTQuOTg0NjE2IEM0MzkuODA1NTQxLDExNy45NDE0NCA0NDEuNDY2NjY3LDEyMS45NTE3NTMgNDQxLjQ2NjY2NywxMjYuMTMzMzMzIEw0NDEuNDY2NjY3LDIzNi41IEM0NDEuNDY2NjY3LDI0NS4yMDc2ODkgNDM0LjQwNzY4OSwyNTIuMjY2NjY3IDQyNS43LDI1Mi4yNjY2NjcgTDQ3LjMsMjUyLjI2NjY2NyBDMzguNTkyMzEwNSwyNTIuMjY2NjY3IDMxLjUzMzMzMzUsMjQ1LjIwNzY4OSAzMS41MzMzMzM1LDIzNi41IEwzMS41MzMzMzM1LDEyNi4xMzMzMzMgWiIgaWQ9IlBhdGgiIGZpbGw9IiNGRkFBNDQiPjwvcGF0aD4KICAgICAgICAgICAgPHBhdGggZD0iTTE3My40MzMzMzMsMjM2LjUgQzE3My40MzMzMzMsMjI3Ljc5MjMxMSAxODAuNDkyMzExLDIyMC43MzMzMzMgMTg5LjIsMjIwLjczMzMzMyBMMjgzLjgsMjIwLjczMzMzMyBDMjkyLjUwNzY4OSwyMjAuNzMzMzMzIDI5OS41NjY2NjcsMjI3Ljc5MjMxMSAyOTkuNTY2NjY3LDIzNi41IEwyOTkuNTY2NjY3LDI4My44IEMyOTkuNTY2NjY3LDI5Mi41MDc2ODkgMjkyLjUwNzY4OSwyOTkuNTY2NjY3IDI4My44LDI5OS41NjY2NjcgTDE4OS4yLDI5OS41NjY2NjcgQzE4MC40OTIzMTEsMjk5LjU2NjY2NyAxNzMuNDMzMzMzLDI5Mi41MDc2ODkgMTczLjQzMzMzMywyODMuOCBMMTczLjQzMzMzMywyMzYuNSBMMTczLjQzMzMzMywyMzYuNSBaIiBpZD0iUGF0aCIgZmlsbD0iI0ZGRkZGRiI+PC9wYXRoPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+",
+    type: "once",
     content: `function main(system){
       system.fs.writeFile('/C/Users/Desktop/在线工具.url',
         {
@@ -97,13 +104,13 @@ const temp = [
     }`,
     uninstallContent: `function main(system){
       system.fs.unlink('/C/Users/Desktop/在线工具.url')
-    }`
+    }`,
   },
   {
-    name: 'shimo',
-    desc:'添加石墨文档',
-    icon: 'data:image/vnd.microsoft.icon;base64,AAABAAEAICAAAAEAIACoEAAAFgAAACgAAAAgAAAAQAAAAAEAIAAAAAAAABAAABILAAASCwAAAAAAAAAAAABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZADEtGQFhLRkCZS0ZAyUtGQOpLRkD6S0ZA+ktGQOpLRkDJS0ZAmUtGQFhLRkAMS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAJUtGQJtLRkD1S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQPZLRkCcS0ZAJUtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZACEtGQIlLRkD6S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD6S0ZAiUtGQAhLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQCRLRkDRS0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA0UtGQCRLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAyS0ZA6EtGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA6EtGQDJLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAJEtGQOpLRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA6ktGQCRLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQAlLRkDRS0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA0UtGQApLRkAAS0ZAAEtGQABLRkAAS0ZAiUtGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/3Jwdf/o6Or//f39/8fHy/9ta2//S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZAiktGQABLRkAAS0ZAAEtGQCRLRkD6S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9YVFT/+Pj4//////////////////////+5ub7/TEdC/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD6S0ZAJUtGQABLRkAAS0ZAnEtGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/5WUm/////////////////////////////////+Xl53/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkCcS0ZAAEtGQA1LRkD0S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/ysrO//////////////////////////////////////9wb3P/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQPVLRkANS0ZAV0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/05IRf/6+fr//////////////////////////////////////+7v8P9UUE//S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQFdLRkCaS0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/aGVp/////////////////////////////////////////////////6Ghp/9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZAmktGQMhLRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP+Xl53/////////////////////////////////////////////////8PDx/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkDIS0ZA60tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/8/Q0//////////////////////////////////////////////////+/v7/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQOtLRkD5S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9WUlL//v7//////////////////////////////////////////////////8fHy/9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA+UtGQPlLRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/4iHjf/////////////////////////////////////////////////p6ev/XFla/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD5S0ZA60tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/1NTX////////////////////////////////////////////2Njb/1ZSUv9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQOtLRkDIS0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/2NgY////////////////////////////////////////////8XFyf9TTk3/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZAyEtGQJpLRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/s7O4//////////////////////////////////39/f+QkJb/TEdC/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkCaS0ZAV0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/11ZW//+/v7////////////////////////////Ky8//X1xe/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQFdLRkANS0ZA9EtGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/wMDF///////////////////////b297/dXR5/0tGQf9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD0S0ZADUtGQABLRkCbS0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/359g//////////////////l5ef/fn2D/0xGQv9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQJxLRkAAS0ZAAEtGQCNLRkD6S0ZA/0tGQP9LRkD/S0ZA/0tGQP9mYmb/9/b3///////V1dj/fHuA/01IRP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD6S0ZAJEtGQABLRkAAS0ZAAEtGQIlLRkD/S0ZA/0tGQP9LRkD/S0ZA/+zs7f/AwMX/bWtv/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQIlLRkAAS0ZAAEtGQABLRkAAS0ZACUtGQNBLRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkDRS0ZACUtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAJEtGQOpLRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA6ktGQCRLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAMktGQOhLRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQOhLRkAyS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAI0tGQM9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkDPS0ZAJEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZACEtGQIhLRkD5S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD5S0ZAiUtGQAhLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQCRLRkCbS0ZA9EtGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD0S0ZAm0tGQCRLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAMS0ZAV0tGQJhLRkDIS0ZA6UtGQPhLRkD4S0ZA6UtGQMhLRkCYS0ZAV0tGQAxLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAA/8AD//8AAP/8AAA/+AAAH/AAAA/gAAAHwAAAA8AAAAOAAAABgAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAGAAAABwAAAA8AAAAPgAAAH8AAAD/gAAB/8AAA//wAA///AA/8=',
-    type:'once',
+    name: "shimo",
+    desc: "添加石墨文档",
+    icon: "data:image/vnd.microsoft.icon;base64,AAABAAEAICAAAAEAIACoEAAAFgAAACgAAAAgAAAAQAAAAAEAIAAAAAAAABAAABILAAASCwAAAAAAAAAAAABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZADEtGQFhLRkCZS0ZAyUtGQOpLRkD6S0ZA+ktGQOpLRkDJS0ZAmUtGQFhLRkAMS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAJUtGQJtLRkD1S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQPZLRkCcS0ZAJUtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZACEtGQIlLRkD6S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD6S0ZAiUtGQAhLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQCRLRkDRS0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA0UtGQCRLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAyS0ZA6EtGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA6EtGQDJLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAJEtGQOpLRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA6ktGQCRLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQAlLRkDRS0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA0UtGQApLRkAAS0ZAAEtGQABLRkAAS0ZAiUtGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/3Jwdf/o6Or//f39/8fHy/9ta2//S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZAiktGQABLRkAAS0ZAAEtGQCRLRkD6S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9YVFT/+Pj4//////////////////////+5ub7/TEdC/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD6S0ZAJUtGQABLRkAAS0ZAnEtGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/5WUm/////////////////////////////////+Xl53/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkCcS0ZAAEtGQA1LRkD0S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/ysrO//////////////////////////////////////9wb3P/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQPVLRkANS0ZAV0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/05IRf/6+fr//////////////////////////////////////+7v8P9UUE//S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQFdLRkCaS0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/aGVp/////////////////////////////////////////////////6Ghp/9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZAmktGQMhLRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP+Xl53/////////////////////////////////////////////////8PDx/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkDIS0ZA60tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/8/Q0//////////////////////////////////////////////////+/v7/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQOtLRkD5S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9WUlL//v7//////////////////////////////////////////////////8fHy/9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA+UtGQPlLRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/4iHjf/////////////////////////////////////////////////p6ev/XFla/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD5S0ZA60tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/1NTX////////////////////////////////////////////2Njb/1ZSUv9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQOtLRkDIS0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/2NgY////////////////////////////////////////////8XFyf9TTk3/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZAyEtGQJpLRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/s7O4//////////////////////////////////39/f+QkJb/TEdC/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkCaS0ZAV0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/11ZW//+/v7////////////////////////////Ky8//X1xe/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQFdLRkANS0ZA9EtGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/wMDF///////////////////////b297/dXR5/0tGQf9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD0S0ZADUtGQABLRkCbS0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/359g//////////////////l5ef/fn2D/0xGQv9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQJxLRkAAS0ZAAEtGQCNLRkD6S0ZA/0tGQP9LRkD/S0ZA/0tGQP9mYmb/9/b3///////V1dj/fHuA/01IRP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD6S0ZAJEtGQABLRkAAS0ZAAEtGQIlLRkD/S0ZA/0tGQP9LRkD/S0ZA/+zs7f/AwMX/bWtv/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQIlLRkAAS0ZAAEtGQABLRkAAS0ZACUtGQNBLRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkDRS0ZACUtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAJEtGQOpLRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA6ktGQCRLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAMktGQOhLRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQOhLRkAyS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAI0tGQM9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkDPS0ZAJEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZACEtGQIhLRkD5S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD5S0ZAiUtGQAhLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQCRLRkCbS0ZA9EtGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD/S0ZA/0tGQP9LRkD0S0ZAm0tGQCRLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAMS0ZAV0tGQJhLRkDIS0ZA6UtGQPhLRkD4S0ZA6UtGQMhLRkCYS0ZAV0tGQAxLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAAS0ZAAEtGQABLRkAA/8AD//8AAP/8AAA/+AAAH/AAAA/gAAAHwAAAA8AAAAOAAAABgAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAGAAAABwAAAA8AAAAPgAAAH8AAAD/gAAB/8AAA//wAA///AA/8=",
+    type: "once",
     content: `function main(system){
       system.fs.writeFile('/C/Users/Desktop/石墨文档.url',
         {
@@ -113,20 +120,31 @@ const temp = [
     }`,
     uninstallContent: `function main(system){
       system.fs.unlink('/C/Users/Desktop/石墨文档.url')
-    }`
-  }
-
-]
+    }`,
+  },
+  {
+    name: "更多应用",
+    desc: "更多应用敬请期待，如果您有合适的应用，可以点击开始菜单，意见反馈取得联系",
+  },
+];
 </script>
 
 <template>
   <div class="store">
     <div v-if="isready" class="store-top">
-      <div v-for="item in temp" class="store-item">
-        <AppItem :item="item" 
-        :installedList="installedList" 
-        :install="install" 
-          :uninstall="uninstall"></AppItem>
+      <div class="left-bar"></div>
+      <div class="right-main">
+        <div class="sub-title">热门应用</div>
+        <div class="main-app">
+          <div v-for="item in temp" class="store-item">
+            <AppItem
+              :item="item"
+              :installedList="installedList"
+              :install="install"
+              :uninstall="uninstall"
+            ></AppItem>
+          </div>
+        </div>
       </div>
     </div>
     <div v-else class="store-noready">
@@ -135,7 +153,7 @@ const temp = [
         <div class="waitd" id="wait2"></div>
         <div class="waitd" id="wait3"></div>
         <div class="waitd" id="wait4"></div>
-    </div>
+      </div>
     </div>
   </div>
 </template>
@@ -144,124 +162,142 @@ const temp = [
 .store {
   width: 100%;
   height: 100%;
-  height: 100vh;
+  /* height: 100vh; */
 }
-.store-top{
+.store-top {
   width: 100%;
   height: 100%;
   display: flex;
-  flex-wrap: wrap;
   justify-content: flex-start;
-  align-items:  flex-start;
+  align-items: flex-start;
 }
-.store-noready{
+.left-bar {
+  width: 60px;
+}
+.sub-title {
+  padding-top: 30px;
+  font-size: 20px;
+  font-weight: bold;
+  margin: 10px;
+}
+.main-app {
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 10px;
+  overflow: auto;
+}
+.store-noready {
+  /* width: 100%; */
+  /* height: 100%; */
   background-color: #0076d733;
 }
 
-
 #wait {
-    position: absolute;
-    left: 50%;
-    top: calc(50% + 150px);
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 150px);
 }
 
 .waitd {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    left: 30px;
-    background-color: azure;
-    border-radius: 50%;
-    transform-origin: -15px 0;
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  left: 30px;
+  background-color: azure;
+  border-radius: 50%;
+  transform-origin: -15px 0;
 }
 
 #wait1 {
-    animation: dotAni1 2s linear infinite;
+  animation: dotAni1 2s linear infinite;
 }
 
 #wait2 {
-    animation: dotAni2 2s linear infinite;
+  animation: dotAni2 2s linear infinite;
 }
 
 #wait3 {
-    animation: dotAni3 2s linear infinite;
+  animation: dotAni3 2s linear infinite;
 }
 
 #wait4 {
-    animation: dotAni4 2s linear infinite;
+  animation: dotAni4 2s linear infinite;
 }
 
 @keyframes dotAni1 {
-    0% {
-        transform: rotateZ(0deg);
-    }
+  0% {
+    transform: rotateZ(0deg);
+  }
 
-    20% {
-        transform: rotateZ(240deg);
-    }
+  20% {
+    transform: rotateZ(240deg);
+  }
 
-    85% {
-        transform: rotateZ(290deg);
-    }
+  85% {
+    transform: rotateZ(290deg);
+  }
 
-    100% {
-        transform: rotateZ(360deg);
-    }
+  100% {
+    transform: rotateZ(360deg);
+  }
 }
 
 @keyframes dotAni2 {
-    0% {
-        transform: rotateZ(0deg);
-    }
+  0% {
+    transform: rotateZ(0deg);
+  }
 
-    35% {
-        transform: rotateZ(240deg);
-    }
+  35% {
+    transform: rotateZ(240deg);
+  }
 
-    85% {
-        transform: rotateZ(290deg);
-    }
+  85% {
+    transform: rotateZ(290deg);
+  }
 
-    100% {
-        transform: rotateZ(360deg);
-    }
+  100% {
+    transform: rotateZ(360deg);
+  }
 }
 
 @keyframes dotAni3 {
-    0% {
-        transform: rotateZ(0deg);
-    }
+  0% {
+    transform: rotateZ(0deg);
+  }
 
-    50% {
-        transform: rotateZ(240deg);
-    }
+  50% {
+    transform: rotateZ(240deg);
+  }
 
-    85% {
-        transform: rotateZ(290deg);
-    }
+  85% {
+    transform: rotateZ(290deg);
+  }
 
-    100% {
-        transform: rotateZ(360deg);
-    }
+  100% {
+    transform: rotateZ(360deg);
+  }
 }
 
 @keyframes dotAni4 {
-    0% {
-        transform: rotateZ(0deg);
-    }
+  0% {
+    transform: rotateZ(0deg);
+  }
 
-    65% {
-        transform: rotateZ(240deg);
-    }
+  65% {
+    transform: rotateZ(240deg);
+  }
 
-    85% {
-        transform: rotateZ(290deg);
-    }
+  85% {
+    transform: rotateZ(290deg);
+  }
 
-    100% {
-        transform: rotateZ(360deg);
-    }
+  100% {
+    transform: rotateZ(360deg);
+  }
 }
 </style>
