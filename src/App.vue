@@ -121,7 +121,7 @@ const temp = [
       <div class="left-bar"></div>
       <div class="right-main">
         <div class="main-title">
-          VTRON商店
+          <!-- VTRON商店 -->
           <span class="sub-title">热门应用 </span>
           <span class="sub-tip" v-if="isNoSystem">
             当前不在vtron环境下，无法安装
@@ -155,6 +155,7 @@ const temp = [
   width: 100%;
   height: 100%;
   height: 100vh;
+  background-color: rgb(255, 255, 255);
 }
 .store-top {
   width: 100%;
@@ -179,8 +180,8 @@ const temp = [
   font-weight: bold;
   font-variant: small-caps;
   font-variant-ligatures: discretionary-ligatures;
-  margin: 10px;
-  margin-top: 20px;
+  margin: 8px;
+  margin-top: 8px;
   user-select: none;
   overflow: hidden;
   white-space: nowrap;
