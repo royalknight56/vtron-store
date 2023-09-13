@@ -116,47 +116,165 @@ const temp = [
 </script>
 
 <template>
-  <div class="store">
-    <div v-if="isready" class="store-top">
-      <div class="left-bar"></div>
-      <div class="right-main">
-        <div class="main-title">
-          <!-- VTRON商店 -->
-          <span class="sub-title">热门应用 </span>
-          <span class="sub-tip" v-if="isNoSystem">
-            当前不在vtron环境下，无法安装
-          </span>
+  <div class="outer">
+    <div class="uper">
+      <div class="up-text">VTRON Store</div>
+    </div>
+    <div class="main">
+      <div class="left">
+        <div class="left-icon">
+          <div class="icon-derc"></div>
+          <svg
+            t="1694613650127"
+            class="icon"
+            viewBox="0 0 1024 1024"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            p-id="10617"
+            width="200"
+            height="200"
+          >
+            <path
+              d="M511.813 92.188L92.188 428.844v502.5h295.406V647.469h248.344v283.875h295.406v-502.5z"
+              p-id="10618"
+            ></path>
+          </svg>
         </div>
-        <div class="main-app">
-          <div v-for="item in temp" class="store-item">
-            <AppItem
-              :item="item"
-              :installedList="installedList"
-              :install="install"
-              :uninstall="uninstall"
-            ></AppItem>
+      </div>
+      <div class="store">
+        <div v-if="isready" class="store-top">
+          <!-- <div class="left-bar"></div> -->
+          <div class="right-main">
+            <div class="main-title">
+              <!-- VTRON商店 -->
+              <!-- <span class="sub-title">热门应用 </span> -->
+            </div>
+            <div class="swiper">
+              <div class="swiper-txt">
+                主页
+                <span class="sub-tip" v-if="isNoSystem">
+                  当前不在vtron环境下，无法安装
+                </span>
+              </div>
+              <div class="swiper-inner">
+                <div class="swiper-tab"></div>
+                <div class="swiper-tab"></div>
+                <div class="swiper-tab"></div>
+                <div class="swiper-tab"></div>
+              </div>
+            </div>
+            <div class="main-app">
+              <div v-for="item in temp" class="store-item">
+                <AppItem
+                  :item="item"
+                  :installedList="installedList"
+                  :install="install"
+                  :uninstall="uninstall"
+                ></AppItem>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div v-else class="store-noready">
+          <div id="wait">
+            <div class="waitd" id="wait1"></div>
+            <div class="waitd" id="wait2"></div>
+            <div class="waitd" id="wait3"></div>
+            <div class="waitd" id="wait4"></div>
           </div>
         </div>
       </div>
     </div>
-    <div v-else class="store-noready">
-      <div id="wait">
-        <div class="waitd" id="wait1"></div>
-        <div class="waitd" id="wait2"></div>
-        <div class="waitd" id="wait3"></div>
-        <div class="waitd" id="wait4"></div>
-      </div>
-    </div>
   </div>
 </template>
-
-<style scoped>
-.store {
-  width: 100%;
-  height: 100%;
-  height: 100vh;
-  background-color: rgb(255, 255, 255);
+<style>
+/*定义滚动条高宽及背景
+ 高宽分别对应横竖滚动条的尺寸*/
+::-webkit-scrollbar {
+  width: 5px;
+  height: 16px;
+  background-color: #ffffff;
 }
+/*定义滚动条轨道
+  内阴影+圆角*/
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  background-color: #ffffff;
+}
+/*定义滑块
+  内阴影+圆角*/
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: rgba(132, 132, 132, 0.537);
+}
+</style>
+<style scoped>
+.outer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.uper {
+  padding: 0px 20px;
+  font-size: 12px;
+  height: 40px;
+  line-height: 40px;
+  flex-shrink: 0;
+  color: rgb(134, 134, 134);
+  background-color: rgb(243, 243, 243);
+}
+
+.main {
+  width: 100%;
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  background-color: rgb(243, 243, 243);
+}
+.left {
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+  background-color: rgb(243, 243, 243);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+.left-icon {
+  width: 56px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  border-radius: 6px;
+  position: relative;
+}
+.icon-derc {
+  height: 20px;
+  width: 4px;
+  border-radius: 4px;
+  background-color: #363533;
+  position: absolute;
+  left: 2px;
+}
+.left-icon svg {
+  width: 20px;
+  height: 20px;
+  color: #363533;
+  stroke: #363533;
+}
+.store {
+  /* width: 100%; */
+  flex: 1;
+  background-color: rgb(255, 255, 255);
+  border-top-left-radius: 10px;
+  overflow: hidden;
+}
+
 .store-top {
   width: 100%;
   height: 100%;
@@ -172,7 +290,8 @@ const temp = [
 .right-main {
   width: 100%;
   height: 100%;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .main-title {
@@ -201,6 +320,56 @@ const temp = [
   margin-left: 10px;
   user-select: none;
 }
+.swiper {
+  width: max-content;
+  height: 300px;
+  /* overflow: hidden; */
+  margin: 10px;
+  margin-top: 0px;
+  position: relative;
+}
+@keyframes swiperAni {
+  0%,
+  33% {
+    transform: translateX(0px);
+  }
+
+  36%,
+  66% {
+    transform: translateX(-600px);
+  }
+
+  69%,
+  96% {
+    transform: translateX(-1200px);
+  }
+  100% {
+    transform: translateX(0px);
+  }
+}
+.swiper-inner {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+  animation: swiperAni 20s ease-in-out infinite;
+}
+.swiper-tab {
+  width: 600px;
+  height: 300px;
+  background-color: rgb(243, 243, 243);
+  border-radius: 20px;
+  box-shadow: 0px 10px 20px 1px #2524241f;
+}
+.swiper-txt {
+  position: absolute;
+  top: 20px;
+  left: 30px;
+  font-weight: 600;
+  color: white;
+  z-index: 10;
+  text-shadow: 0px 0px 5px #00000058;
+}
 .main-app {
   width: 100%;
   /* height: 100%; */
@@ -209,14 +378,14 @@ const temp = [
   flex-wrap: wrap;
   justify-content: flex-start;
   align-items: flex-start;
-  /* padding: 10px; */
+  padding: 10px;
   overflow: auto;
   align-content: flex-start;
 }
 .store-noready {
   width: 100%;
   height: 100%;
-  background-color: #0076d769;
+  background-color: #cdcdcd69;
 }
 
 #wait {

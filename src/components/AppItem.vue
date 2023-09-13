@@ -33,7 +33,7 @@ defineProps({
 </script>
 <style scoped>
 .app-item {
-  width: 260px;
+  width: 350px;
   height: 100px;
   margin: 10px;
   display: flex;
