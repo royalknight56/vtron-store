@@ -3,7 +3,7 @@ import { onMounted, ref } from "vue";
 import AppItem from "./components/AppItem.vue";
 import defaulticon from "./assets/default.png";
 import moonappicon from "./assets/moonappicon.webp";
-
+// import webdav from "./apps/webdav.es.js?raw";
 const isready = ref(false);
 const isNoSystem = ref(false);
 const installedList = ref([]);
@@ -26,6 +26,7 @@ onMounted(() => {
   }, 5000);
 });
 function install(item: any) {
+  console.log(item);
   window.parent.postMessage(
     {
       type: "install",
@@ -97,6 +98,13 @@ const temp = [
         }
       }`,
   },
+  // {
+  //   name: "webdav",
+  //   desc: "webdav",
+  //   type: "all",
+  //   icon: defaulticon,
+  //   content: webdav,
+  // },
   transSimpleUrlApp("看月亮", "https://static.myim.online/moon/", moonappicon),
   transSimpleUrlApp(
     "在线工具",
@@ -157,10 +165,18 @@ const temp = [
                 </span>
               </div>
               <div class="swiper-inner">
-                <div class="swiper-tab"></div>
-                <div class="swiper-tab"></div>
-                <div class="swiper-tab"></div>
-                <div class="swiper-tab"></div>
+                <div class="swiper-tab">
+                  <img src="./assets/banner1.jpg" />
+                </div>
+                <div class="swiper-tab">
+                  <img src="./assets/banner2.jpg" />
+                </div>
+                <div class="swiper-tab">
+                  <img src="./assets/banner3.jpg" />
+                </div>
+                <div class="swiper-tab">
+                  <img src="./assets/banner2.jpg" />
+                </div>
               </div>
             </div>
             <div class="main-app">
@@ -360,6 +376,12 @@ const temp = [
   background-color: rgb(243, 243, 243);
   border-radius: 20px;
   box-shadow: 0px 10px 20px 1px #2524241f;
+}
+.swiper-tab img {
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  object-fit: cover;
 }
 .swiper-txt {
   position: absolute;
