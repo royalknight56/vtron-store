@@ -3,7 +3,9 @@ import { onMounted, ref } from "vue";
 import AppItem from "./components/AppItem.vue";
 import defaulticon from "./assets/default.png";
 import moonappicon from "./assets/moonappicon.webp";
-// import webdav from "./apps/webdav.es.js?raw";
+// import webdav from "./appout/webdav.es.js?raw";
+// import demoApp from "./appout/demoApp.es.js?raw";
+
 const isready = ref(false);
 const isNoSystem = ref(false);
 const installedList = ref([]);
@@ -98,13 +100,24 @@ const temp = [
         }
       }`,
   },
+
   // {
-  //   name: "webdav",
-  //   desc: "webdav",
-  //   type: "all",
+  //   name: "引导安装",
+  //   desc: "引导安装的例子",
   //   icon: defaulticon,
-  //   content: webdav,
+  //   type: "once",
+  //   content: demoApp,
+  //   uninstallContent: `function main(system){
+  //     }`,
   // },
+
+  {
+    name: "webdav",
+    desc: "支持连接webdav，敬请期待",
+    // type: "all",
+    icon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAAAAACPAi4CAAAAk0lEQVRYw2P8z0AZYBw1YHgYcLF9JVk6wyv1wQZccHxPpt2C+0EmMIavJNv14StABlDi//8wA8gJSMYRbMCKLIZpEZQYIPSeQfDdgBpAsRdG08HwNYDiAmWIG/CfiIAiu2Ya4gYwogXWSDXgPxEBORwNYMST2/4PUwNwFRTEKPw/TAz4T0ygkBsLQ9SA0U7XiDQAAHeffgFWSH/RAAAAAElFTkSuQmCC",
+    // content: webdav,
+  },
   transSimpleUrlApp("看月亮", "https://static.myim.online/moon/", moonappicon),
   transSimpleUrlApp(
     "在线工具",
