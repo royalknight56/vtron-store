@@ -28,16 +28,13 @@ onMounted(() => {
   }, 5000);
 });
 function install(item: any) {
-  console.log(item);
   window.parent.postMessage(
     {
       type: "install",
       data: {
-        path: `/C/System/plugs/${item.name}.js`,
-        file: {
-          content: item.content?.replaceAll("\n", " "),
-          uninstallContent: item.uninstallContent?.replaceAll("\n", " "),
-        },
+        name: `${item.name}.js`,
+        content: item.content?.replaceAll("\n", " "),
+        uninstallContent: item.uninstallContent?.replaceAll("\n", " "),
         type: item.type,
       },
     },
@@ -50,11 +47,11 @@ function uninstall(item: any) {
     {
       type: "uninstall",
       data: {
-        path: `/C/System/plugs/${item.name}.js`,
-        file: {
-          content: item.content?.replaceAll("\n", " "),
-          uninstallContent: item.uninstallContent?.replaceAll("\n", " "),
-        },
+        name: `${item.name}.js`,
+
+        content: item.content?.replaceAll("\n", " "),
+        uninstallContent: item.uninstallContent?.replaceAll("\n", " "),
+
         type: item.type,
       },
     },
@@ -68,14 +65,14 @@ function transSimpleUrlApp(title: string, url: string, icon: string) {
     icon: icon,
     type: "once",
     content: `function main(system){
-      system.fs.writeFile('/C/Users/Desktop/${title}.url',
+      system.fs.writeFile(system._options.userLocation+'Desktop/${title}.url',
         {
-          content: "link::${url}::icon::${icon}",
+          content: "link::url::${url}::${icon}",
         }
       )
     }`,
     uninstallContent: `function main(system){
-      system.fs.unlink('/C/Users/Desktop/${title}.url')
+      system.fs.unlink(system._options.userLocation+'Desktop/${title}.url')
     }`,
   };
 }
