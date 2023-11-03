@@ -70,11 +70,7 @@ function transSimpleUrlApp(title: string, url: string, icon: string) {
     icon: icon,
     type: "once",
     content: `function main(system){
-      system.fs.writeFile(system._options.userLocation+'Desktop/${title}.url',
-        {
-          content: "link::url::${url}::${icon}",
-        }
-      )
+      system.fs.writeFile(system._options.userLocation+'Desktop/${title}.url', "link::url::${url}::${icon}")
     }`,
     uninstallContent: `function main(system){
       system.fs.unlink(system._options.userLocation+'Desktop/${title}.url')

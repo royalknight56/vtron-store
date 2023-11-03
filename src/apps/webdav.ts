@@ -48,12 +48,7 @@ function main(system: any, _: typeof Vue) {
       },
     } as {
       readFile: (path: string) => Promise<string | null>;
-      writeFile: (
-        path: string,
-        par: {
-          content: string;
-        }
-      ) => Promise<void>;
+      writeFile: (path: string, content: string) => Promise<void>;
       appendFile: (path: string, content: string) => Promise<void>;
       readdir: (path: string) => Promise<VtronFile[]>;
       exists: (path: string) => Promise<boolean>;
